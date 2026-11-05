@@ -1,0 +1,9 @@
+.dart_tool/
+.packages
+build/
+android/
+ios/
+test/
+pubspec.lock
+.idea/
+*.iml
