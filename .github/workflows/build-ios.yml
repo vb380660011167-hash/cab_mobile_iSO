@@ -1,0 +1,41 @@
+
+name: Build iOS
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  ios:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Встановити Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Створити iOS-частину проєкту
+        run: |
+          flutter create --platforms=ios --project-name cab --org com.cab.chat .
+          rm -rf test
+
+      - name: Завантажити залежності
+        run: flutter pub get
+
+      - name: Зібрати iOS
+        run: flutter build ios --release --no-codesign
+
+      - name: Архівувати застосунок
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent \
+            build/ios/iphoneos/Runner.app Cab-ios-app.zip
+
+      - name: Зберегти результат
+        uses: actions/upload-artifact@v4
+        with:
+          name: Cab-iOS
+          path: Cab-ios-app.zip
